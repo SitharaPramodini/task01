@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import logo from '../img/logo.png';
 import image from '../img/image.png';
 
@@ -9,68 +10,33 @@ const Signup = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+      alert('Passwords do not match');
       return;
     }
-  
+
     try {
-      const response = await fetch('https://intern-evaluate.talentfort.live/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({  
-          first_name: firstName, 
-          last_name: lastName, 
-          email, 
-          phone_number: phoneNumber, 
-          password, 
-          confirm_password: confirmPassword 
-        }),
+      const response = await axios.post('https://intern-evaluate.talentfort.live/signup', {
+        first_name: firstName,
+        last_name: lastName,
+        email: email,
+        phone_number: phoneNumber,
+        password: password,
+        confirm_password: confirmPassword
       });
-  
-      let Message = 'An unexpected error occurred.';
-  
-      // Check if response is JSON
-      try {
-        const contentType = response.headers.get('content-type');
-        if (contentType && contentType.includes('application/json')) {
-          const data = await response.json();
-          if (response.ok) {
-            alert(`Successfully signed up! Welcome ${data.user.first_name}`);
-            setError('');
-          } else {
-            if (data.message && data.message.includes('Email already in use')) {
-              setError('Email is already in use. Please try another email or log in.');
-            } else {
-              setError(`Sign-up failed: ${data.message || 'Please try again.'}`);
-            }
-            console.error('Error response:', data);
-          }
-        } else {
-          // Handle non-JSON responses
-          Message = await response.text();
-        //   console.error('Unexpected response:', Message);
-          alert(Message);
-          setError('An error occurred. Please try again.');
-        }
-      } catch (error) {
-        // Handle JSON parsing errors
-        console.error('Error parsing response:', error);
-        setError('An error occurred. Please try again.');
+
+      if (response.status === 200) {
+        alert(`signup successful! Welcome ${firstName} ${lastName}
+          Email: ${email}
+          Phone number: ${phoneNumber}`);
       }
-    } catch (error) {
-      console.error('Error:', error);
-      setError('An error occurred. Please try again.');
+    } catch (err) {
+      alert('Failed to create account');
     }
   };
-  
 
   return (
     <div className='split'>
@@ -81,7 +47,6 @@ const Signup = () => {
         <p className='login-subtitle'>Let’s get you all set up so you can access your personal account.</p>
 
         <form className="max-w-sm mt-9" onSubmit={handleSubmit}>
-          {error && <p className='error-message'>{error}</p>}
           
           <div className='name'>
             <div className="mb-5 signup">
@@ -183,7 +148,7 @@ const Signup = () => {
           </button>
         </form>
 
-        <p className='bottom'>Already have an account? <a href='/'>Login</a></p> 
+        <p className='bottom'>Already have an account? <a href='/' style={{color: '#8DBC09'}}>Login</a></p> 
       </div>
 
       <div className='right-signup'>

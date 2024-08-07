@@ -21,7 +21,9 @@ const Login = () => {
         if (response.ok) {
             const data = await response.json();
             console.log(data)
-            alert(`Login successful! Welcome ${data.user.first_name}`);
+            alert(`Login successful! Welcome ${data.user.first_name} ${data.user.last_name}
+                Email: ${data.user.email}
+                Phone number: ${data.user.phone_number}`);
         } else {
             alert('Login failed. Please check your credentials.');
         }
